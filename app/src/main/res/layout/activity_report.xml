@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReportActivity">
+
+    <FrameLayout
+        android:id="@+id/frameLayout3"
+        android:layout_width="410dp"
+        android:layout_height="189dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2">
+
+        <Button
+            android:id="@+id/upload"
+            android:layout_width="114dp"
+            android:layout_height="61dp"
+            android:layout_gravity="center_horizontal"
+            android:text="신고하기" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayout2"
+        android:layout_width="412dp"
+        android:layout_height="235dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="237dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/t1"
+                    android:layout_width="match_parent"
+                    android:layout_height="68dp"
+                    android:ems="10"
+                    android:hint="위반사항"
+                    android:inputType="textPersonName"
+                    android:text="불법주정차" />
+
+                <EditText
+                    android:id="@+id/t2"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:ems="10"
+                    android:hint="차량번호"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/t3"
+                    android:layout_width="match_parent"
+                    android:layout_height="57dp"
+                    android:ems="10"
+                    android:hint="신고위치"
+                    android:inputType="textPersonName" />
+
+                <EditText
+                    android:id="@+id/t4"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:ems="10"
+                    android:hint="신고일자"
+                    android:inputType="textPersonName" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="410dp"
+        android:layout_height="262dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/browse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:text="이미지 선택" />
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="266dp"
+            android:layout_height="213dp"
+            android:layout_gravity="center|top"
+            tools:srcCompat="@tools:sample/avatars" />
+
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,7 @@
+# ninja log v5
+0	1974	656215031	CMakeFiles/native-lib.dir/native-lib.cpp.o	7287f3928bcbb669
+1980	2386	656215031	C:/Users/user/StudioProjects/newproject/app/build/intermediates/cxx/Debug/3c7226k1/obj/x86/libnative-lib.so	4b06ac25980f73ed
+0	325	0	clean	4a0ad9cce977d139
+10	1229	656217951	CMakeFiles/native-lib.dir/native-lib.cpp.o	7287f3928bcbb669
+1229	1757	656217951	C:/Users/user/StudioProjects/newproject/app/build/intermediates/cxx/Debug/3c7226k1/obj/x86/libnative-lib.so	4b06ac25980f73ed
+1	32	0	clean	4a0ad9cce977d139

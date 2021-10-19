@@ -1,0 +1,26 @@
+# ninja log v5
+7	2090	655673538	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+2094	2350	655673538	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+0	31	0	clean	4a0ad9cce977d139
+33	1102	655678495	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+1103	1343	655678495	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+0	46	0	clean	4a0ad9cce977d139
+6	1339	655678653	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+1340	1637	655678654	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+1	27	0	clean	4a0ad9cce977d139
+20	1738	656024736	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+1738	2000	656024737	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+1	19	0	clean	4a0ad9cce977d139
+17	1086	656025216	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+1086	1305	656025216	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+0	22	0	clean	4a0ad9cce977d139
+17	924	656026877	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+924	1140	656026878	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+0	35	0	clean	4a0ad9cce977d139
+6	1548	656027224	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+1548	1766	656027224	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471
+0	94	0	clean	4a0ad9cce977d139
+0	16	0	clean	4a0ad9cce977d139
+1	21	0	clean	4a0ad9cce977d139
+44	1207	656027616	CMakeFiles/native-lib.dir/native-lib.cpp.o	cdde69c02e77de0a
+1207	1467	656027616	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/x86/libnative-lib.so	52df37e0e3be2471

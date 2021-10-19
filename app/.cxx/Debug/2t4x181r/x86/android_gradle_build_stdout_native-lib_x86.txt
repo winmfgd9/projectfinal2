@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Users\user\StudioProjects\android-tesseract-demo2\app\.cxx\Debug\2t4x181r\x86'
+ninja: no work to do.

@@ -1,0 +1,14 @@
+# ninja log v5
+0	15	0	clean	4a0ad9cce977d139
+0	37	0	clean	4a0ad9cce977d139
+1	16	0	clean	4a0ad9cce977d139
+0	16	0	clean	4a0ad9cce977d139
+3	7280	656025796	CMakeFiles/native-lib.dir/native-lib.cpp.o	edb9f27cd9257e18
+7283	9226	656025798	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/arm64-v8a/libnative-lib.so	6f77e605007d3b7c
+1	18	0	clean	4a0ad9cce977d139
+0	23	0	clean	4a0ad9cce977d139
+1	72	0	clean	4a0ad9cce977d139
+0	21	0	clean	4a0ad9cce977d139
+0	17	0	clean	4a0ad9cce977d139
+9	894	656027802	CMakeFiles/native-lib.dir/native-lib.cpp.o	edb9f27cd9257e18
+895	1150	656027802	C:/Users/user/StudioProjects/project/app/build/intermediates/cxx/Debug/505g195f/obj/arm64-v8a/libnative-lib.so	6f77e605007d3b7c

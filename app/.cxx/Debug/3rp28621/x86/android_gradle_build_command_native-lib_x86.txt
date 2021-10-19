@@ -1,0 +1,7 @@
+Executable : C:\Users\user\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\ninja.exe
+arguments : 
+-C
+C:\Users\user\AndroidStudioProjects\project6\app\.cxx\Debug\3rp28621\x86
+native-lib
+jvmArgs : 
+
