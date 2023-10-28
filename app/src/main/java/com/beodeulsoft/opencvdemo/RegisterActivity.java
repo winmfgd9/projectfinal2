@@ -22,7 +22,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btn_register;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) { //액티비티 시작시 처음으로 실행되는 생명주기
+    protected void onCreate(Bundle savedInstanceState) { //액티비티 시작시 처음으로 실행
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
@@ -42,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // EditText에 입력된 현재 입력되어 있는 값을 가져온다.
+                // 사용자 입력 값을 변수에 저장
                 String userID = et_id.getText().toString();
                 String userPass = et_pass.getText().toString();
                 String userName = et_name.getText().toString();
@@ -73,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     }
                 };
-                //서버로 volley를 이용해서 요청
+                // 서버에 회원가입 정보 전송
                 RegisterRequest registerRequest = new RegisterRequest(userID, userPass, userName,userAge,NickName,Email,PhoneNumber,CarName,CarLicense,responseListener);
                 RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
                 queue.add(registerRequest);

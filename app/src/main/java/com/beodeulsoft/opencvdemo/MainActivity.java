@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity{
         vt=findViewById(R.id.tv);
 
 
-        // 전화번호 찾기
+        // 전화번호를 찾기 위한 클릭 리스너
         find.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity{
                 String strDetectText = textView.getText().toString();
                 if(!TextUtils.isEmpty(strDetectText)) {
                     //서버로 volley를 이용해서 요청
-                    // strDetectText = "00누2222"; // 텍스트인식 없이 테스트 해보고싶으면 주석해제
+                    // 텍스트가 비어있지 않은 경우에만 서버에 요청
                     SelectPhoneNumRequest selectPhoneNum = new SelectPhoneNumRequest(strDetectText,responseListener);
                     RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
                     queue.add(selectPhoneNum);
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-
+        // 카메라로 사진 찍기 리스너
         assert btnTakePicture != null;
         btnTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,21 +161,25 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        // 텍스트 인식 초기화
         tessBaseAPI = new TessBaseAPI();
         String dir = getFilesDir() + "/tesseract";
+
+        // 언어 파일을 확인하고 텍스트 인식 API 초기화
         if(checkLanguageFile(dir+"/tessdata"))
             tessBaseAPI.init(dir, "kor");
     }
 
+    // 카메라 프리뷰를 위한 리스너
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            //open your camera here
+            // 카메라 오픈
             openCamera();
         }
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            // Transform you image captured size according to the surface width and height
+            // 프리뷰 크기 변경 시 호출
         }
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
@@ -186,18 +190,19 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
+    // 카메라 상태에 따른 콜백 리스너
     private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
             //This is called when the camera is open
             Log.e(TAG, "onOpened");
             cameraDevice = camera;
-            createCameraPreview();
+            createCameraPreview(); // 카메라 프리뷰 생성
         }
         @Override
         public void onDisconnected(CameraDevice camera) {
             cameraDevice.close();
-        }
+        } // 카메라 연결 해제
         @Override
         public void onError(CameraDevice camera, int error) {
             cameraDevice.close();
@@ -205,11 +210,19 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
+
+    /**
+     * 카메라 작업을 위한 백그라운드 스레드를 시작합니다.
+     */
     protected void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("Camera Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
+
+    /**
+     * 카메라 작업에 사용되는 백그라운드 스레드를 중지합니다.
+     */
     protected void stopBackgroundThread() {
         mBackgroundThread.quitSafely();
         try {
@@ -221,66 +234,83 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * 카메라 장치를 사용하여 사진을 찍는 메서드
+     */
     protected void takePicture() {
+        // 카메라 장치가 null인 경우 로그를 출력하고 메서드를 종료한다.
         if(null == cameraDevice) {
             Log.e(TAG, "cameraDevice is null");
             return;
         }
+        // 카메라 서비스를 가져온다.
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
+            // 카메라의 특성을 가져온다.
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
             Size[] jpegSizes = null;
             if (characteristics != null) {
                 StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 jpegSizes = map.getOutputSizes(ImageFormat.JPEG);
             }
+            // 이미지의 크기를 설정한다.
             int width = 640;
             int height = 480;
             if (jpegSizes != null && 0 < jpegSizes.length) {
                 width = jpegSizes[0].getWidth();
                 height = jpegSizes[0].getHeight();
             }
+            // 이미지 리더를 생성한다.
             ImageReader imageReader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
+            // 출력할 Surface 리스트를 생성한다.
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(imageReader.getSurface());
             outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
+            // 캡처 요청을 위한 빌더를 생성한다.
             final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(imageReader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            // Orientation
+            // 찍힌 이미지의 방향을 설정합니다.
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-            //final File file = new File(Environment.getExternalStorageDirectory()+"/pic.jpg");
+            // 이미지가 사용 가능할 때 호출될 리스너를 정의한다.
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
                     Image image = null;
                     try {
+                        // 최신 이미지 획득
                         image = reader.acquireLatestImage();
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] bytes = new byte[buffer.capacity()];
                         buffer.get(bytes);
                         Log.d(TAG, "takePicture");
 
+                        // 이미지 샘플링 옵션 설정
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inSampleSize = 8;
 
+                        // 바이트 배열을 비트맵으로 변환 후 회전
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
                         bitmap = GetRotatedBitmap(bitmap, 90);
 
                         Bitmap imgRoi;
-                        OpenCVLoader.initDebug(); // 초기화
+                        OpenCVLoader.initDebug(); // OpenCV 초기화
 
+                        // 비트맵을 Mat으로 변환
                         Mat matBase=new Mat();
                         Utils.bitmapToMat(bitmap ,matBase);
+                        // 이미지 전처리 작업
                         Mat matGray = new Mat();
                         Mat matTopHat = new Mat();
                         Mat matBlackHat = new Mat();
                         Mat matThresh = new Mat();
                         Mat matDilate = new Mat();
 
+                        // 그레이 스케일로 변환
                         Imgproc.cvtColor(matBase, matGray, Imgproc.COLOR_BGR2GRAY); // GrayScale
                         Mat matKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new org.opencv.core.Size(3,3), new Point(0,0));
+                        // 모폴로지 연산
                         Imgproc.morphologyEx(matGray, matTopHat, Imgproc.MORPH_TOPHAT, matKernel, new Point(0,0)); //원본에서 열기연산 제외
                         Imgproc.morphologyEx(matGray, matBlackHat, Imgproc.MORPH_BLACKHAT, matKernel, new Point(0,0)); //닫기연산에서 원본 제외
 
@@ -288,19 +318,22 @@ public class MainActivity extends AppCompatActivity{
                         Core.add(matGray, matTopHat, matAdd);
                         Mat matSub = new Mat();
                         Core.subtract(matAdd, matBlackHat, matSub);
+                        // 가우시안 블러와 이진화 처리
                         Mat matBlur = new Mat();
                         Imgproc.GaussianBlur(matSub, matBlur, new org.opencv.core.Size(5,5), 0); //노이즈 제거
                         Imgproc.adaptiveThreshold(matBlur, matThresh, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY_INV, 19, 9); //영상이진화
-                        Imgproc.dilate(matThresh, matDilate, matKernel); //엣지 테두리 더 굵게 처리
+                        // 팽창 연산
+                        Imgproc.dilate(matThresh, matDilate, matKernel);
 
                         List<MatOfPoint> contours = new ArrayList<>();
                         Mat hierarchy = new Mat();
                         Mat matContour = new Mat();
                         Imgproc.cvtColor(matDilate, matContour, Imgproc.COLOR_GRAY2BGR);
-                        //관심영역 추출
+                        // 윤곽선 검출
                         Imgproc.findContours(matDilate, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
                         //Imgproc.drawContours(matContour, contours, -1, new Scalar(255, 0, 0), 5);
 
+                        // UI 초기화 작업을 위한 스레드 실행
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -327,6 +360,7 @@ public class MainActivity extends AppCompatActivity{
                             Rect rect = Imgproc.boundingRect(matOfPoint);
 
                             ratio = (float)rect.width / (float)rect.height;
+                            // 사각형 크기와 비율로 필터링
                             if (rect.width < 30 || rect.height < 30 || rect.width <= rect.height || ratio < 1.7 || ratio > 5.0)
                                 continue; // 사각형 크기와 비율에 따라 출력 여부 결정
                             Mat matRoi = matThresh.submat(rect);
@@ -378,6 +412,8 @@ public class MainActivity extends AppCompatActivity{
 
             };
             imageReader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
+
+            // 캡처 완료 시 호출될 콜백을 정의한다.
             final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
@@ -385,6 +421,7 @@ public class MainActivity extends AppCompatActivity{
                     createCameraPreview();
                 }
             };
+            // 캡처 세션을 생성한다.
             cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
@@ -405,25 +442,28 @@ public class MainActivity extends AppCompatActivity{
 
     protected void createCameraPreview() {
         try {
+            // 텍스처뷰에서 서피스 텍스처를 가져옴
             SurfaceTexture texture = textureView.getSurfaceTexture();
             assert texture != null;
             texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
             Surface surface = new Surface(texture);
+            // 카메라 프리뷰를 위한 요청 생성
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(surface);
             cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                    //The camera is already closed
+                    // 카메라가 이미 종료되었는 경우
                     if (null == cameraDevice) {
                         return;
                     }
-                    // When the session is ready, we start displaying the preview.
+                    // 세션이 준비되면 프리뷰를 시작합니다.
                     cameraCaptureSessions = cameraCaptureSession;
                     updatePreview();
                 }
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    // 설정 변경에 실패한 경우 토스트 메시지를 띄움
                     Toast.makeText(MainActivity.this, "Configuration change", Toast.LENGTH_SHORT).show();
                 }
             }, null);
@@ -435,16 +475,18 @@ public class MainActivity extends AppCompatActivity{
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "is camera open");
         try {
+            // 사용 가능한 첫 번째 카메라를 선택
             cameraId = manager.getCameraIdList()[0];
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
             imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
-            // Add permission for camera and let user grant the permission
+            // 카메라와 외부 저장소 권한을 체크하고 필요한 경우 권한을 요청
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
                 return;
             }
+            // 카메라 오픈
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -455,14 +497,17 @@ public class MainActivity extends AppCompatActivity{
         if(null == cameraDevice) {
             Log.e(TAG, "updatePreview error, return");
         }
+        // 자동 모드로 프리뷰 설정
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
         try {
+            // 프리뷰를 반복해서 업데이트
             cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
     private void closeCamera() {
+        // 카메라와 이미지 리더를 종료
         //if (null != cameraDevice) {
         //    cameraDevice.close();
         //    cameraDevice = null;
@@ -475,9 +520,10 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // 카메라 권한 요청에 대한 결과 처리
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                // close the app
+                // 권한이 거부되면 앱을 종료
                 Toast.makeText(MainActivity.this, "죄송하지만, 사진촬영 권한이 승인되지 않으면 이앱을 사용할 수 없습니다.", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -489,6 +535,7 @@ public class MainActivity extends AppCompatActivity{
         super.onResume();
         Log.e(TAG, "onResume");
         startBackgroundThread();
+        // 텍스처뷰가 사용 가능한 경우 카메라를 엽니다.
         if (textureView.isAvailable()) {
             openCamera();
         } else {
@@ -498,6 +545,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         Log.e(TAG, "onPause");
+        // 앱이 일시 정지 상태로 전환될 때 카메라를 닫고 백그라운드 스레드를 중지
         closeCamera();
         stopBackgroundThread();
         super.onPause();
@@ -506,11 +554,13 @@ public class MainActivity extends AppCompatActivity{
     boolean checkLanguageFile(String dir)
     {
         File file = new File(dir);
+        // 지정된 디렉터리가 존재하지 않으면 디렉터리를 생성하고 파일을 생성
         if(!file.exists() && file.mkdirs())
             createFiles(dir);
         else if(file.exists()){
             String filePath = dir + "/kor.traineddata";
             File langDataFile = new File(filePath);
+            // 특정 언어 데이터 파일이 없으면 파일을 생성
             if(!langDataFile.exists())
                 createFiles(dir);
         }
@@ -525,6 +575,7 @@ public class MainActivity extends AppCompatActivity{
         OutputStream outputStream = null;
 
         try {
+            // asset 폴더에서 훈련된 데이터 파일을 가져옴
             inputStream = assetMgr.open("kor.traineddata");
 
             String destFile = dir + "/kor.traineddata";
@@ -533,6 +584,7 @@ public class MainActivity extends AppCompatActivity{
 
             byte[] buffer = new byte[1024];
             int read;
+            // 파일 내용을 복사
             while ((read = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, read);
             }
@@ -544,6 +596,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    // 주어진 각도만큼 비트맵을 회전시키는 함수
     public synchronized static Bitmap GetRotatedBitmap(Bitmap bitmap, int degrees) {
         if (degrees != 0 && bitmap != null) {
             Matrix m = new Matrix();
@@ -560,6 +613,7 @@ public class MainActivity extends AppCompatActivity{
         return bitmap;
     }
 
+    // 비동기로 Tesseract OCR을 사용하여 비트맵에서 텍스트를 추출하는 클래스
     private class AsyncTess extends AsyncTask<Bitmap, Integer, String> {
         @Override
         protected String doInBackground(Bitmap... mRelativeParams) {
@@ -586,6 +640,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    // 번호판 내부의 글자 수를 세는 함수
     protected  int getContourCount(Mat matContour, Mat matSubContour, Rect rcComp) {
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
